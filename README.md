@@ -1,6 +1,6 @@
 # photo-album-giphy
 Create photo album by Reactjs and GIPHY photo trending API
 
-## `npm i`
+## Install node_modules `npm i`
 
-## `npm start`
+## Start app `npm start`
