@@ -1,0 +1,11 @@
+.container__LoadMore {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loadMoreBtn {
+    background-color: lightblue;  
+    color: black;  
+    font-size: 25px;  
+}

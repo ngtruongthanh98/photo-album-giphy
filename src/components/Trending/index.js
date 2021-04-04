@@ -1,42 +1,78 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { fetchTrendingGifs } from "../../api/Fetch";
+import React, { Component } from "react";
 
-const Trending = () => {
-    const [giphs, setGiphs] = useState({ data: [] });
-    const [loader, setLoader] = useState(true);
-    const [isError, setIsError] = useState(false);
+const URL = "http://api.giphy.com/v1/gifs/";
+const KEY = "T1lALmAvvtv7RJZ96ky23GnTXuhbHyuS";
 
-    const fetchApi = useCallback(async () => {
-        setLoader(true);
-        try {
-            const response = await fetchTrendingGifs();
-            setGiphs(response);
-        } catch (error) {
-            console.log(error);
-            setIsError(error);
-        }
-        setLoader(false);
-    }, [fetchTrendingGifs]);
+export class Trending extends Component {
+    constructor(props) {
+        super(props);
 
-    useEffect(() => {
-        fetchApi();
-    }, []);
+        this.state = {
+            items: [],
+            visible: 12,
+            error: false,
+            loader: true,
+        };
+    }
 
-    const listItems = giphs.data.map((item) => (
-        <a href={item.url} target="new" key={item.id}>
-            <img src={item.images.original.url} />
-        </a>
-    ));
+    loadMore = () => {
+        this.setState((prev) => {
+            return { visible: prev.visible + 12 };
+        });
+    };
 
-    return (
-        <div className="pakageTrending">
-            <h1>Top Trending</h1>
-            <div className="trending">
-                {loader ? <h2>...loading</h2> : listItems}
-                {isError && <div>Something went wrong ...</div>}
-            </div>
-        </div>
-    );
-};
+    componentDidMount() {
+        fetch(`https://api.giphy.com/v1/gifs/trending?api_key=${KEY}`)
+            .then((res) => res.json())
+            .then((json) => {
+                this.setState({
+                    items: json.data,
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+                this.setState({
+                    error: true,
+                });
+            });
+    }
+
+    render() {
+        return (
+            <React.Fragment>
+                <div className="packageTrending">
+                    <h1>Giphy Trending</h1>
+                    <div className="gif-list">
+                        {this.state.items
+                            .slice(0, this.state.visible)
+                            .map((item, index) => {
+                                return (
+                                    <a
+                                        className="gif-item"
+                                        href={item.url}
+                                        target="new"
+                                        key={item.id}
+                                    >
+                                        <img src={item.images.original.url} />
+                                    </a>
+                                );
+                            })}
+                    </div>
+                    {this.state.visible < this.state.items.length && (
+                        <div className="container__LoadMore">
+                            <button
+                                onClick={this.loadMore}
+                                type="button"
+                                className="loadMoreBtn"
+                            >
+                                Load more
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </React.Fragment>
+        );
+    }
+}
 
 export default Trending;
