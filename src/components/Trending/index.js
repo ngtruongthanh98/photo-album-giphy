@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import "./style.css";
+import PhotoModal from "../PhotoModal";
 
 const URL = "http://api.giphy.com/v1/gifs/";
 const KEY = "T1lALmAvvtv7RJZ96ky23GnTXuhbHyuS";
@@ -12,6 +14,7 @@ export class Trending extends Component {
             visible: 12,
             error: false,
             loader: true,
+            show: false,
         };
     }
 
@@ -19,6 +22,14 @@ export class Trending extends Component {
         this.setState((prev) => {
             return { visible: prev.visible + 12 };
         });
+    };
+
+    showModal = () => {
+        this.setState({ show: true });
+    };
+
+    hideModal = () => {
+        this.setState({ show: false });
     };
 
     componentDidMount() {
@@ -47,14 +58,24 @@ export class Trending extends Component {
                             .slice(0, this.state.visible)
                             .map((item, index) => {
                                 return (
-                                    <a
-                                        className="gif-item"
-                                        href={item.url}
-                                        target="new"
-                                        key={item.id}
-                                    >
-                                        <img src={item.images.original.url} />
-                                    </a>
+                                    <React.Fragment>
+                                        <a
+                                            className="gif-item"
+                                            target="new"
+                                            onClick={this.showModal}
+                                            key={index}
+                                        >
+                                            <img
+                                                src={item.images.original.url}
+                                            />
+                                        </a>
+
+                                        <PhotoModal
+                                            onClose={this.hideModal}
+                                            show={this.state.show}
+                                            src={item.images.original.url}
+                                        />
+                                    </React.Fragment>
                                 );
                             })}
                     </div>
